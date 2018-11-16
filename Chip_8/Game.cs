@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 using System.Drawing;
 
 namespace Chip_8
@@ -16,8 +17,9 @@ namespace Chip_8
         myChip8 chip8 = new myChip8();
         int width, height;
         float tileWidth, tileHeight;
+        KeyboardState keyState
 
-        
+
 
         public Game(GameWindow window)
         {
@@ -32,6 +34,8 @@ namespace Chip_8
 
         }
 
+       
+
         void window_Load(object sender, EventArgs e)
         {
             chip8.init();
@@ -43,14 +47,38 @@ namespace Chip_8
             tileHeight = height / 32;
             tileWidth = width / 64;
 
-            
+            keyState = Keyboard.GetState();
+
 
         }
 
         void window_UpdateFrame(object sender, FrameEventArgs e)
         {
+            if (keyState.IsKeyDown(Key.Number1)) { }
+            if (keyState.IsKeyDown(Key.Number1)) { }
+            if (keyState.IsKeyDown(Key.Number1)) { }
+            if (keyState.IsKeyDown(Key.Number1)) { }
+
+            if (keyState.IsKeyDown(Key.Number1)) { }
+            if (keyState.IsKeyDown(Key.Number1)) { }
+            if (keyState.IsKeyDown(Key.Number1)) { }
+            if (keyState.IsKeyDown(Key.Number1)) { }
+
+            if (keyState.IsKeyDown(Key.Number1)) { }
+            if (keyState.IsKeyDown(Key.Number1)) { }
+            if (keyState.IsKeyDown(Key.Number1)) { }
+            if (keyState.IsKeyDown(Key.Number1)) { }
+
+            if (keyState.IsKeyDown(Key.Number1)) { }
+            if (keyState.IsKeyDown(Key.Number1)) { }
+            if (keyState.IsKeyDown(Key.Number1)) { }
+            if (keyState.IsKeyDown(Key.Number1)) { }
+
+
             chip8.eCycle();
             chip8.setKeys();
+
+
 
         }
 
