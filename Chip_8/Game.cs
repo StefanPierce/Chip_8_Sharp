@@ -27,7 +27,7 @@ namespace Chip_8
             window.UpdateFrame += window_UpdateFrame;
             window.RenderFrame += window_RenderFrame;
 
-            
+            window.VSync = OpenTK.VSyncMode.On;
             
 
         }
@@ -35,7 +35,7 @@ namespace Chip_8
         void window_Load(object sender, EventArgs e)
         {
             chip8.init();
-            chip8.load("test.ch8");
+            chip8.load("pong.rom");
 
             width = window.Width;
             height = window.Height;
@@ -66,6 +66,8 @@ namespace Chip_8
             //chip8.drawFlag()
             if (true)
             {
+
+                
                 for (int x = 0; x < chip8.Gfx().GetLength(0); x++)
                 {
                     for (int y = 0; y < chip8.Gfx().GetLength(1); y++)
@@ -100,9 +102,9 @@ namespace Chip_8
 
                 }
                 window.SwapBuffers();
-
+                chip8.drawFlag = false;
             }
-
+            
         }
     }
 }

@@ -28,9 +28,9 @@ namespace Chip_8
         static void setupGraphics()
         {
             window = new GameWindow(400, 300);
-            
             game = new Game(window);
-            window.Run(1.0 / 60);
+            window.Run(60, 60);
+            
 
           
         }
