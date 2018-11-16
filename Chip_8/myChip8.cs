@@ -21,7 +21,7 @@ namespace Chip_8
         ushort pc;
 
 
-        byte[] gfx = new byte[64 * 32];
+        byte[,] gfx = new byte[64,32];
 
         byte delay_timer;
         byte sound_timer;
@@ -48,6 +48,14 @@ namespace Chip_8
             for (int i = 0; i < 80; i++)
             {
                 memory[i] = fontset[i];
+            }
+
+            for (int i = 0; i < gfx.GetLength(0); i++)
+            { 
+                for(int i2 = 0; i2 < gfx.GetLength(1); i2 += 2)
+                {
+                    gfx[i, i2] = 1;
+                }         
             }
 
         }
@@ -125,6 +133,11 @@ namespace Chip_8
         public void setKeys()
         {
 
+        }
+
+        public byte[,] Gfx()
+        {
+            return gfx;
         }
     }
 }
