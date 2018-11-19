@@ -17,7 +17,7 @@ namespace Chip_8
         myChip8 chip8 = new myChip8();
         int width, height;
         float tileWidth, tileHeight;
-        KeyboardState keyState
+        KeyboardState keyState;
 
 
 
@@ -54,29 +54,7 @@ namespace Chip_8
 
         void window_UpdateFrame(object sender, FrameEventArgs e)
         {
-            if (keyState.IsKeyDown(Key.Number1)) { }
-            if (keyState.IsKeyDown(Key.Number1)) { }
-            if (keyState.IsKeyDown(Key.Number1)) { }
-            if (keyState.IsKeyDown(Key.Number1)) { }
-
-            if (keyState.IsKeyDown(Key.Number1)) { }
-            if (keyState.IsKeyDown(Key.Number1)) { }
-            if (keyState.IsKeyDown(Key.Number1)) { }
-            if (keyState.IsKeyDown(Key.Number1)) { }
-
-            if (keyState.IsKeyDown(Key.Number1)) { }
-            if (keyState.IsKeyDown(Key.Number1)) { }
-            if (keyState.IsKeyDown(Key.Number1)) { }
-            if (keyState.IsKeyDown(Key.Number1)) { }
-
-            if (keyState.IsKeyDown(Key.Number1)) { }
-            if (keyState.IsKeyDown(Key.Number1)) { }
-            if (keyState.IsKeyDown(Key.Number1)) { }
-            if (keyState.IsKeyDown(Key.Number1)) { }
-
-
-            chip8.eCycle();
-            chip8.setKeys();
+            
 
 
 
@@ -89,8 +67,31 @@ namespace Chip_8
             GL.Clear(ClearBufferMask.DepthBufferBit);
             
             GL.MatrixMode(MatrixMode.Projection);
-            
-            
+
+            if (keyState.IsKeyDown(Key.Number1)) { }
+            if (keyState.IsKeyDown(Key.Number2)) { }
+            if (keyState.IsKeyDown(Key.Number3)) { }
+            if (keyState.IsKeyDown(Key.Number4)) { }
+
+            if (keyState.IsKeyDown(Key.Q)) { }
+            if (keyState.IsKeyDown(Key.W)) { }
+            if (keyState.IsKeyDown(Key.E)) { }
+            if (keyState.IsKeyDown(Key.R)) { }
+
+            if (keyState.IsKeyDown(Key.A)) { }
+            if (keyState.IsKeyDown(Key.S)) { }
+            if (keyState.IsKeyDown(Key.D)) { }
+            if (keyState.IsKeyDown(Key.F)) { }
+
+            if (keyState.IsKeyDown(Key.Z)) { }
+            if (keyState.IsKeyDown(Key.X)) { }
+            if (keyState.IsKeyDown(Key.C)) { }
+            if (keyState.IsKeyDown(Key.V)) { }
+
+
+            chip8.eCycle();
+            chip8.setKeys();
+
             //chip8.drawFlag()
             if (true)
             {
