@@ -27,8 +27,7 @@ namespace Chip_8
         byte delay_timer;
         byte sound_timer;
 
-        ushort[] stack = new ushort[16];
-        ushort sp;
+        Stack<ushort> stack;
 
         byte[] key = new byte[16];
 
@@ -38,19 +37,15 @@ namespace Chip_8
             pc = (0x200);
             opcode = 0;
             I = 0;
-            sp = 0;
             V = new byte[16];
-
+            stack = new Stack<ushort>();
             //clear display
             //clear stack
             //clear registers V0-VF
             //clear memory
 
             //load font
-            for (int i = 0; i < 80; i++)
-            {
-                memory[i] = fontset[i];
-            }
+            
 
 
 
@@ -80,7 +75,12 @@ namespace Chip_8
                   0xF0, 0x80, 0xF0, 0x80, 0x80  // F
                 };
 
-            for(int i = 0; i < chip8_fontset.Length; i++)
+            for (int i = 0; i < 80; i++)
+            {
+                memory[i] = fontset[i];
+            }
+
+            for (int i = 0; i < chip8_fontset.Length; i++)
             {
                 memory[i] = chip8_fontset[i];
             }
@@ -108,23 +108,31 @@ namespace Chip_8
             switch (opcode & (0xF000))
             {
                 case (0x0000):
-                    switch (opcode & (0x000F))
+                    switch (opcode & (0x00FF))
                     {
-                        case (0x0000):  //0x00E0: Clears the screen
+                        case (0x00E0):  //0x00E0: Clears the screen
                             Console.WriteLine("00E0");
                             for(int i = 0; i < gfx.GetLength(0); i++)
                             {
                                 for(int i2 = 0; i2 < gfx.GetLength(1); i2++)
                                 {
-                                    //gfx[i, i2] = 0;
+                                    gfx[i, i2] = 0;
                                 }
                             }
                             pc += 2;
-                            drawFlag = true;
+                           // drawFlag = true;
                             break;
-                        case (0x000E):  //0x00EE:  Returns from subroutine
+                        case (0x00EE):  //0x00EE:  Returns from subroutine
                             Console.WriteLine("00EE");
-                            pc = stack[sp];
+                            if(stack.Count > 0)
+                            {
+                                pc = stack.Pop();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Tried exiting non existant subroutine");
+                            }
+                            pc += 2;
                             break;
                         default:
                             Console.WriteLine("Unknown opcode: " + (opcode & (0xFFFF)).ToString("X"));
@@ -208,8 +216,7 @@ namespace Chip_8
                     break;
                 case (0x2000): //2NNN: Jump to subroutine at address NNN
                     Console.WriteLine("2NNN");
-                    stack[sp+1] = pc;
-                    sp++;
+                    stack.Push(pc);
                     pc = (ushort)(opcode & 0x0FFF);
                     break;
                 case (0x3000):
@@ -316,15 +323,28 @@ namespace Chip_8
                             Console.WriteLine("8XY5");
                             break;
                         case (0x0006):
+                            V[0xF] = (byte)(V[register8x] & 0x01);
+                            V[register8x] >>= 1;
                             pc += 2;
                             Console.WriteLine("8XY6");
                             break;
                         case (0x0007):
+                            if(V[register8y] - V[register8x] < 0)
+                            {
+                                V[0xF] = 0;
+                            }
+                            else
+                            {
+                                V[0xF] = 1;
+                            }
+                            V[register8x] = (byte)(V[register8y] - V[register8x]);
                             pc += 2;
                             Console.WriteLine("8XY7");
                             break;
                         case (0x000E):
                             pc += 2;
+                            V[0xF] = (byte)((V[register8x] & 0x80) >> 7);
+                            V[register8x] <<= 1;
                             Console.WriteLine("8XYE");
                             break;
                         default:

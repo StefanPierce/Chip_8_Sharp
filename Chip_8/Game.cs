@@ -93,7 +93,7 @@ namespace Chip_8
             chip8.setKeys();
 
             //chip8.drawFlag()
-            if (true)
+            if (chip8.drawFlag)
             {
 
                 
