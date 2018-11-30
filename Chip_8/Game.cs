@@ -39,7 +39,7 @@ namespace Chip_8
         void window_Load(object sender, EventArgs e)
         {
             chip8.init();
-            chip8.load("pong.rom");
+            chip8.load("test.ch8");
 
             width = window.Width;
             height = window.Height;

@@ -75,11 +75,6 @@ namespace Chip_8
                   0xF0, 0x80, 0xF0, 0x80, 0x80  // F
                 };
 
-            for (int i = 0; i < 80; i++)
-            {
-                memory[i] = fontset[i];
-            }
-
             for (int i = 0; i < chip8_fontset.Length; i++)
             {
                 memory[i] = chip8_fontset[i];
@@ -89,6 +84,7 @@ namespace Chip_8
             for (int i = 0; i < file.Length; i++)
             {
                 memory[i + 512] = file[i];
+
             }
         }
 
@@ -112,56 +108,71 @@ namespace Chip_8
                     {
                         case (0x00E0):  //0x00E0: Clears the screen
                             Console.WriteLine("00E0");
-                            for(int i = 0; i < gfx.GetLength(0); i++)
+                            for (int i = 0; i < gfx.GetLength(0); i++)
                             {
-                                for(int i2 = 0; i2 < gfx.GetLength(1); i2++)
+                                for (int i2 = 0; i2 < gfx.GetLength(1); i2++)
                                 {
                                     gfx[i, i2] = 0;
                                 }
                             }
                             pc += 2;
-                           // drawFlag = true;
+                            // drawFlag = true;
                             break;
                         case (0x00EE):  //0x00EE:  Returns from subroutine
                             Console.WriteLine("00EE");
-                            if(stack.Count > 0)
+                            if (stack.Count > 0)
                             {
                                 pc = stack.Pop();
                             }
                             else
+
                             {
                                 Console.WriteLine("Tried exiting non existant subroutine");
                             }
                             pc += 2;
                             break;
                         default:
-                            Console.WriteLine("Unknown opcode: " + (opcode & (0xFFFF)).ToString("X"));
+                            Console.WriteLine("Unknown opcode: " + (opcode & (0xFFFF)).ToString("X4"));
                             pc += 2;
                             break;
                     }
                     break;
                 case (0xE000):
-                    switch(opcode & (0x000F))
+                    ushort registerEx = (ushort)(opcode & (0x0F00) >> 8);
+                    ushort registerEy = (ushort)(opcode & (0x00F0) >> 4);
+                    switch (opcode & (0x000F))
                     {
                         case (0x000E):
                             pc += 2;
-                            Console.WriteLine("EX91");
+                            if (V[registerEx] > 0)
+                            {
+                                pc += 2;
+                            }
+                            Console.WriteLine("EX9E");
+
                             break;
                         case (0x0001):
                             pc += 2;
+                            if (V[registerEx] == 0)
+                            {
+                                pc += 2;
+                            }
                             Console.WriteLine("EXA1");
                             break;
                         default:
                             pc += 2;
-                            Console.WriteLine("Unknown opcode: " + (opcode & (0x0FFF)).ToString("X"));
+                            Console.WriteLine("Unknown opcode: " + (opcode & (0xFFFF)).ToString("X4"));
                             break;
                     }
                     break;
                 case (0xF000):
-                    switch (opcode & (0xF00))
+                    ushort registerFx = (ushort)(opcode & (0x0F00) >> 8);
+                    ushort registerFy = (ushort)(opcode & (0x00F0) >> 4);
+                    switch (opcode & (0x00FF))
                     {
                         case (0x0007):
                             pc += 2;
+                            V[registerFx] = delay_timer;
                             Console.WriteLine("FX07");
                             break;
                         case (0x000A):
@@ -170,24 +181,29 @@ namespace Chip_8
                             break;
                         case (0x0015):
                             pc += 2;
+                            delay_timer = V[registerFx];
                             Console.WriteLine("FX15");
                             break;
                         case (0x0018):
                             pc += 2;
+                            sound_timer = V[registerFx];
                             Console.WriteLine("FX18");
                             break;
                         case (0x001E):
                             pc += 2;
+                            I += V[registerFx];
                             Console.WriteLine("FX1E");
                             break;
                         case (0x0029):
                             pc += 2;
-                            byte registerFx = (byte)(opcode & (0xF00) >> 8);
                             I = V[registerFx];
                             Console.WriteLine("FX29");
                             break;
                         case (0x0033):
                             pc += 2;
+                            V[I] = (byte)(V[registerFx] / 100);
+                            V[I + 1] = (byte)((V[registerFx] / 10) % 10);
+                            V[I + 2] = (byte)((V[registerFx] % 100) % 10);
                             Console.WriteLine("FX33");
                             break;
                         case (0x0055):
@@ -199,7 +215,7 @@ namespace Chip_8
                             Console.WriteLine("FX55");
                             break;
                         default:
-                            Console.WriteLine("Unknown opcode: " + (opcode & (0x0FFF)).ToString("X"));
+                            Console.WriteLine("Unknown opcode: " + (opcode & (0xFFFF)).ToString("X4"));
                             pc += 2;
                             break;
                     }
@@ -211,20 +227,21 @@ namespace Chip_8
 
                     break;
                 case (0x1000):
-                    Console.WriteLine("1NNN");
+                    Console.WriteLine("1NNN: " + opcode);
                     pc = (ushort)(opcode & (0x0FFF));
                     break;
                 case (0x2000): //2NNN: Jump to subroutine at address NNN
                     Console.WriteLine("2NNN");
                     stack.Push(pc);
-                    pc = (ushort)(opcode & 0x0FFF);
+                    pc = (ushort)(opcode & (0x0FFF));
+                    
                     break;
                 case (0x3000):
                     Console.WriteLine("3XNN");
-                    ushort register3 = (ushort)(opcode & (0x0F00)>>8);
+                    ushort register3 = (ushort)(opcode & (0x0F00) >> 8);
                     ushort value3 = (ushort)(opcode & (0x00FF));
                     Console.WriteLine(value3);
-                    if(V[register3] == value3)
+                    if (V[register3] == value3)
                     {
                         pc += 2;
                     }
@@ -233,7 +250,7 @@ namespace Chip_8
                     break;
                 case (0x4000):
                     Console.WriteLine("4XNN");
-                    ushort register4 = (ushort)(opcode & (0x0F00)>>8);
+                    ushort register4 = (ushort)(opcode & (0x0F00) >> 8);
                     ushort value4 = (ushort)(opcode & (0x00FF));
 
                     if (V[register4] != value4)
@@ -329,7 +346,7 @@ namespace Chip_8
                             Console.WriteLine("8XY6");
                             break;
                         case (0x0007):
-                            if(V[register8y] - V[register8x] < 0)
+                            if (V[register8y] - V[register8x] < 0)
                             {
                                 V[0xF] = 0;
                             }
@@ -348,24 +365,29 @@ namespace Chip_8
                             Console.WriteLine("8XYE");
                             break;
                         default:
-                            Console.WriteLine("Unknown opcode: " + (opcode & (0x0FFF)).ToString("X"));
+                            Console.WriteLine("Unknown opcode: " + (opcode & (0xFFFF)).ToString("X4"));
                             break;
                     }
                     break;
                 case (0x9000):
                     Console.WriteLine("9XY0");
                     pc += 2;
-
+                    ushort register9x = (ushort)(opcode & (0x0F00) >> 8);
+                    ushort register9y = (ushort)(opcode & (0x00F0) >> 4);
+                    if (V[register9x] != V[register9y])
+                    {
+                        pc += 2;
+                    }
                     break;
                 case (0xB000):
                     Console.WriteLine("BNNN");
                     pc += 2;
-
+                    pc = (ushort)(opcode & (0x0FFF));
                     break;
                 case (0xC000):
                     Console.WriteLine("CXNN");
-                    pc += 2;
-
+                    ushort val = (ushort)((opcode & 0x0FFF));
+                    pc = (ushort)(val + V[0]);
                     break;
                 case (0xD000):
                     Console.WriteLine("DXYN");
@@ -395,7 +417,7 @@ namespace Chip_8
                     break;
 
                 default:
-                    Console.WriteLine("Unknown opcode: " + (opcode&(0x0FFF)).ToString("X"));
+                    Console.WriteLine("Unknown opcode: " + (opcode&(0xFFFF)).ToString("X4"));
                     pc += 2;
                     break;
 
