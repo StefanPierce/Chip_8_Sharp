@@ -24,12 +24,13 @@ namespace Chip_8
 
         byte[,] gfx = new byte[64, 32];
 
-        byte delay_timer;
-        byte sound_timer;
+        byte delay_timer = 0;
+        byte sound_timer = 1;
 
         Stack<ushort> stack;
 
         byte[] key = new byte[16];
+        bool keyPressed = false;
 
         public void init()
         {
@@ -45,12 +46,15 @@ namespace Chip_8
             //clear memory
 
             //load font
-            
+        }
 
-
-
-
-
+        public void send_Key(int id, bool val)
+        {
+            key[id] = BitConverter.GetBytes(val)[0];
+            if (val)
+            {
+                keyPressed = true;  
+            }
         }
 
         public void load(string filename)
@@ -99,7 +103,7 @@ namespace Chip_8
             //}
 
             //Fetch Opcode
-            opcode = BitConverter.ToUInt16(new byte[2] { memory[pc], memory[pc + 1] }, 0);
+            opcode = BitConverter.ToUInt16(new byte[2] { memory[pc+1], memory[pc] }, 0);
             //Decode Opcode
             switch (opcode & (0xF000))
             {
@@ -149,7 +153,6 @@ namespace Chip_8
                                 pc += 2;
                             }
                             Console.WriteLine("EX9E");
-
                             break;
                         case (0x0001):
                             pc += 2;
@@ -176,7 +179,11 @@ namespace Chip_8
                             Console.WriteLine("FX07");
                             break;
                         case (0x000A):
-                            pc += 2;
+                            if (keyPressed)
+                            {
+                                pc += 2;
+                                keyPressed = false;
+                            }
                             Console.WriteLine("FX0A");
                             break;
                         case (0x0015):
@@ -201,16 +208,24 @@ namespace Chip_8
                             break;
                         case (0x0033):
                             pc += 2;
-                            V[I] = (byte)(V[registerFx] / 100);
-                            V[I + 1] = (byte)((V[registerFx] / 10) % 10);
-                            V[I + 2] = (byte)((V[registerFx] % 100) % 10);
+                            memory[I] = (byte)(V[registerFx] / 100);
+                            memory[I + 1] = (byte)((V[registerFx] / 10) % 10);
+                            memory[I + 2] = (byte)((V[registerFx] % 100) % 10);
                             Console.WriteLine("FX33");
                             break;
                         case (0x0055):
+                            for(int i = 0; i < registerFx; i++)
+                            {
+                                memory[I + i] = V[i];
+                            }
                             pc += 2;
                             Console.WriteLine("FX55");
                             break;
                         case (0x0065):
+                            for (int i = 0; i < registerFx; i++)
+                            {
+                                V[i] = memory[I+i];
+                            }
                             pc += 2;
                             Console.WriteLine("FX55");
                             break;
@@ -224,35 +239,32 @@ namespace Chip_8
                     Console.WriteLine("ANNN");
                     I = (ushort)(opcode & 0x0FFF);
                     pc += 2;
-
                     break;
                 case (0x1000):
-                    Console.WriteLine("1NNN: " + opcode);
+                    Console.WriteLine("1NNN");
                     pc = (ushort)(opcode & (0x0FFF));
                     break;
                 case (0x2000): //2NNN: Jump to subroutine at address NNN
                     Console.WriteLine("2NNN");
                     stack.Push(pc);
                     pc = (ushort)(opcode & (0x0FFF));
-                    
                     break;
                 case (0x3000):
                     Console.WriteLine("3XNN");
                     ushort register3 = (ushort)(opcode & (0x0F00) >> 8);
                     ushort value3 = (ushort)(opcode & (0x00FF));
-                    Console.WriteLine(value3);
                     if (V[register3] == value3)
                     {
                         pc += 2;
+                        Console.WriteLine("SKIPPING");
                     }
                     pc += 2;
-
                     break;
                 case (0x4000):
                     Console.WriteLine("4XNN");
                     ushort register4 = (ushort)(opcode & (0x0F00) >> 8);
                     ushort value4 = (ushort)(opcode & (0x00FF));
-
+                    //
                     if (V[register4] != value4)
                     {
                         pc += 2;
@@ -263,13 +275,12 @@ namespace Chip_8
                     Console.WriteLine("5XY0");
                     ushort register5x = (ushort)(opcode & (0x0F00) >> 8);
                     ushort register5y = (ushort)(opcode & (0x00F0) >> 4);
-
+                    //
                     if (V[register5x] == V[register5y])
                     {
                         pc += 2;
                     }
                     pc += 2;
-
                     break;
                 case (0x6000):
                     Console.WriteLine("6XNN");
@@ -283,14 +294,12 @@ namespace Chip_8
                     pc += 2;
                     ushort register7x = (ushort)(opcode & (0x0F00) >> 8);
                     byte value7 = (byte)(opcode & (0x00FF));
-
                     V[register7x] += value7;
-
                     break;
                 case (0x8000):
                     ushort register8x = (ushort)(opcode & (0x0F00) >> 8);
                     ushort register8y = (ushort)(opcode & (0x00F0) >> 4);
-
+                    //
                     switch (opcode & (0x000F))
                     {
                         case (0x0000):
@@ -396,6 +405,7 @@ namespace Chip_8
                     ushort height = (ushort)(opcode & (0x000F));
                     ushort pixel;
 
+                    
                     V[0xF] = 0;
                     for (int yline = 0; yline < height; yline++)
                     {
@@ -404,7 +414,7 @@ namespace Chip_8
                         {
                             if ((pixel & (0x80 >> xline)) != 0)
                             {
-                                if (gfx[x, y] == 1)
+                                if (gfx[x+xline, y+yline] == 1)
                                 {
                                     V[0xF] = 1;
                                 }
@@ -412,6 +422,8 @@ namespace Chip_8
                             }
                         }
                     }
+                    
+
                     drawFlag = true;
                     pc += 2;
                     break;

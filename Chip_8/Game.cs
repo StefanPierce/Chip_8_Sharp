@@ -39,7 +39,7 @@ namespace Chip_8
         void window_Load(object sender, EventArgs e)
         {
             chip8.init();
-            chip8.load("test.ch8");
+            chip8.load("pong.rom");
 
             width = window.Width;
             height = window.Height;
@@ -68,25 +68,26 @@ namespace Chip_8
             
             GL.MatrixMode(MatrixMode.Projection);
 
-            if (keyState.IsKeyDown(Key.Number1)) { }
-            if (keyState.IsKeyDown(Key.Number2)) { }
-            if (keyState.IsKeyDown(Key.Number3)) { }
-            if (keyState.IsKeyDown(Key.Number4)) { }
+            chip8.send_Key(0, keyState.IsKeyDown(Key.Number1));
+            chip8.send_Key(0, keyState.IsKeyDown(Key.Number2));
+            chip8.send_Key(0, keyState.IsKeyDown(Key.Number3));
+            chip8.send_Key(0, keyState.IsKeyDown(Key.Number4));
 
-            if (keyState.IsKeyDown(Key.Q)) { }
-            if (keyState.IsKeyDown(Key.W)) { }
-            if (keyState.IsKeyDown(Key.E)) { }
-            if (keyState.IsKeyDown(Key.R)) { }
+            chip8.send_Key(0, keyState.IsKeyDown(Key.Q));
+            chip8.send_Key(0, keyState.IsKeyDown(Key.W));
+            chip8.send_Key(0, keyState.IsKeyDown(Key.E));
+            chip8.send_Key(0, keyState.IsKeyDown(Key.R));
 
-            if (keyState.IsKeyDown(Key.A)) { }
-            if (keyState.IsKeyDown(Key.S)) { }
-            if (keyState.IsKeyDown(Key.D)) { }
-            if (keyState.IsKeyDown(Key.F)) { }
+            chip8.send_Key(0, keyState.IsKeyDown(Key.A));
+            chip8.send_Key(0, keyState.IsKeyDown(Key.S));
+            chip8.send_Key(0, keyState.IsKeyDown(Key.D));
+            chip8.send_Key(0, keyState.IsKeyDown(Key.F));
 
-            if (keyState.IsKeyDown(Key.Z)) { }
-            if (keyState.IsKeyDown(Key.X)) { }
-            if (keyState.IsKeyDown(Key.C)) { }
-            if (keyState.IsKeyDown(Key.V)) { }
+            chip8.send_Key(0, keyState.IsKeyDown(Key.Z));
+            chip8.send_Key(0, keyState.IsKeyDown(Key.X));
+            chip8.send_Key(0, keyState.IsKeyDown(Key.C));
+            chip8.send_Key(0, keyState.IsKeyDown(Key.V));
+
 
 
             chip8.eCycle();
