@@ -12,6 +12,7 @@ namespace Chip_8
 
         static GameWindow window;
         static Game game;
+        
 
         static void Main(string[] args)
         {
@@ -27,9 +28,9 @@ namespace Chip_8
 
         static void setupGraphics()
         {
-            window = new GameWindow(400, 300);
+            window = new GameWindow(640, 320);
             game = new Game(window);
-            window.Run(60, 60);
+            window.Run();
             
 
           

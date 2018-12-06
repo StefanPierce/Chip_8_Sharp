@@ -29,7 +29,7 @@ namespace Chip_8
             window.UpdateFrame += window_UpdateFrame;
             window.RenderFrame += window_RenderFrame;
 
-            window.VSync = OpenTK.VSyncMode.On;
+           // window.VSync = OpenTK.VSyncMode.On;
             
 
         }
@@ -39,6 +39,8 @@ namespace Chip_8
         void window_Load(object sender, EventArgs e)
         {
             chip8.init();
+
+            //chip8.load(Console.ReadLine());
             chip8.load("pong.rom");
 
             width = window.Width;
@@ -54,9 +56,33 @@ namespace Chip_8
 
         void window_UpdateFrame(object sender, FrameEventArgs e)
         {
-            
 
+           
 
+            keyState = Keyboard.GetState();
+            chip8.reset_Key();
+
+            chip8.send_Key(1, keyState.IsKeyDown(Key.Number1));
+            chip8.send_Key(2, keyState.IsKeyDown(Key.Number2));
+            chip8.send_Key(3, keyState.IsKeyDown(Key.Number3));
+            chip8.send_Key(12, keyState.IsKeyDown(Key.Number4));
+
+            chip8.send_Key(4, keyState.IsKeyDown(Key.Q));
+            chip8.send_Key(5, keyState.IsKeyDown(Key.W));
+            chip8.send_Key(6, keyState.IsKeyDown(Key.E));
+            chip8.send_Key(13, keyState.IsKeyDown(Key.R));
+
+            chip8.send_Key(7, keyState.IsKeyDown(Key.A));
+            chip8.send_Key(8, keyState.IsKeyDown(Key.S));
+            chip8.send_Key(9, keyState.IsKeyDown(Key.D));
+            chip8.send_Key(14, keyState.IsKeyDown(Key.F));
+
+            chip8.send_Key(10, keyState.IsKeyDown(Key.Z));
+            chip8.send_Key(0, keyState.IsKeyDown(Key.X));
+            chip8.send_Key(11, keyState.IsKeyDown(Key.C));
+            chip8.send_Key(15, keyState.IsKeyDown(Key.V));
+
+             chip8.eCycle();
 
         }
 
@@ -67,31 +93,6 @@ namespace Chip_8
             GL.Clear(ClearBufferMask.DepthBufferBit);
             
             GL.MatrixMode(MatrixMode.Projection);
-
-            chip8.send_Key(0, keyState.IsKeyDown(Key.Number1));
-            chip8.send_Key(0, keyState.IsKeyDown(Key.Number2));
-            chip8.send_Key(0, keyState.IsKeyDown(Key.Number3));
-            chip8.send_Key(0, keyState.IsKeyDown(Key.Number4));
-
-            chip8.send_Key(0, keyState.IsKeyDown(Key.Q));
-            chip8.send_Key(0, keyState.IsKeyDown(Key.W));
-            chip8.send_Key(0, keyState.IsKeyDown(Key.E));
-            chip8.send_Key(0, keyState.IsKeyDown(Key.R));
-
-            chip8.send_Key(0, keyState.IsKeyDown(Key.A));
-            chip8.send_Key(0, keyState.IsKeyDown(Key.S));
-            chip8.send_Key(0, keyState.IsKeyDown(Key.D));
-            chip8.send_Key(0, keyState.IsKeyDown(Key.F));
-
-            chip8.send_Key(0, keyState.IsKeyDown(Key.Z));
-            chip8.send_Key(0, keyState.IsKeyDown(Key.X));
-            chip8.send_Key(0, keyState.IsKeyDown(Key.C));
-            chip8.send_Key(0, keyState.IsKeyDown(Key.V));
-
-
-
-            chip8.eCycle();
-            chip8.setKeys();
 
             //chip8.drawFlag()
             if (chip8.drawFlag)
@@ -108,7 +109,7 @@ namespace Chip_8
 
                         GL.Begin(PrimitiveType.Quads);
                     
-                        if (chip8.Gfx()[x, y] != 0)
+                        if (chip8.Gfx()[x, 31-y] != 0)
                         {
                             //color white
                             GL.Color3(Color.LimeGreen);
