@@ -104,6 +104,8 @@ namespace Chip_8
             //Fetch Opcode
             //Console.WriteLine("At: " + pc);
             opcode = BitConverter.ToUInt16(new byte[2] { memory[pc+1], memory[pc] }, 0);
+
+           
             //Decode Opcode
             switch (opcode & (0xF000))
             {
@@ -147,7 +149,7 @@ namespace Chip_8
                     switch (opcode & (0x000F))
                     {
                         case (0x000E):
-                            pc += 2;
+
                             if (key[V[registerEx]] != 0)
                             {
                                 pc += 2;
@@ -156,13 +158,13 @@ namespace Chip_8
                             //Console.WriteLine("EX9E");
                             break;
                         case (0x0001):
-                            pc += 2;
+
                             if (key[V[registerEx]] == 0)
                             {
                                 pc += 2;
+
                             }
                             pc += 2;
-                            //Console.WriteLine("EXA1");
                             break;
                         default:
                             pc += 2;
@@ -302,16 +304,16 @@ namespace Chip_8
                 case (0x6000):
                     //Console.WriteLine("6XNN");
                     ushort register6x = (ushort)((opcode & 0x0F00) >> 8);
-                    byte value6 = (byte)((opcode & 0x00FF));
-                    V[register6x] = value6;
+                    ushort value6 = (ushort)((opcode & 0x00FF));
+                    V[register6x] = (byte)value6;
                     pc += 2;
                     break;
                 case (0x7000):
                     //Console.WriteLine("7XNN");
                     pc += 2;
                     ushort register7x = (ushort)((opcode & 0x0F00) >> 8);
-                    byte value7 = (byte)((opcode & 0x00FF));
-                    V[register7x] += value7;
+                    ushort value7 = (ushort)((opcode & 0x00FF));
+                    V[register7x] += (byte)value7;
                     break;
                 case (0x8000):
                     ushort register8x = (ushort)((opcode & 0x0F00) >> 8);
@@ -366,7 +368,8 @@ namespace Chip_8
                             //Console.WriteLine("8XY5");
                             break;
                         case (0x0006):
-                            V[0xF] = (byte)(V[register8x] & 0x01);
+
+                            V[15] = (byte)(V[register8x] & 0x01);
                             V[register8x] >>= 1;
                             pc += 2;
                             //Console.WriteLine("8XY6");
@@ -407,8 +410,8 @@ namespace Chip_8
                     break;
                 case (0xB000):
                     //Console.WriteLine("BNNN");
-                    pc += 2;
                     pc = (ushort)((opcode & 0x0FFF));
+                    pc += V[0];
                     break;
                 case (0xC000):
                     //Console.WriteLine("CXNN");
