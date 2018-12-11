@@ -32,7 +32,7 @@ namespace Chip_8
             game = new Game(window);
             window.Run();
             
-
+            
           
         }
 

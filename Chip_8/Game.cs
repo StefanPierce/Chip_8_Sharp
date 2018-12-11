@@ -8,6 +8,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace Chip_8
 {
@@ -19,17 +20,22 @@ namespace Chip_8
         float tileWidth, tileHeight;
         KeyboardState keyState;
 
-
+        long delta;
+        long last = DateTime.Now.Ticks;
+        int fps;
+        Stopwatch sw = new Stopwatch();
 
         public Game(GameWindow window)
         {
             this.window = window;
 
+            sw.Start();
+            last = sw.ElapsedMilliseconds;
             window.Load += window_Load;
             window.UpdateFrame += window_UpdateFrame;
             window.RenderFrame += window_RenderFrame;
-
-           // window.VSync = OpenTK.VSyncMode.On;
+            
+            window.VSync = OpenTK.VSyncMode.On;
             
 
         }
@@ -41,7 +47,7 @@ namespace Chip_8
             chip8.init();
 
             //chip8.load(Console.ReadLine());
-            chip8.load("roms/games/Blinky [Hans Christian Egeberg, 1991].ch8");
+            chip8.load("INVADERS.ch8");
 
             width = window.Width;
             height = window.Height;
@@ -56,8 +62,13 @@ namespace Chip_8
 
         void window_UpdateFrame(object sender, FrameEventArgs e)
         {
-
-           
+            
+            if(sw.ElapsedMilliseconds - last > 1000/60)
+            {
+                last = sw.ElapsedMilliseconds;
+                chip8.updateCounters();
+            }
+            
 
             keyState = Keyboard.GetState();
             chip8.reset_Key();
@@ -81,26 +92,7 @@ namespace Chip_8
             chip8.send_Key(0, keyState.IsKeyDown(Key.X));
             chip8.send_Key(11, keyState.IsKeyDown(Key.C));
             chip8.send_Key(15, keyState.IsKeyDown(Key.V));
-            ////
-            //chip8.send_Key(0x1, keyState.IsKeyDown(Key.Number1));
-            //chip8.send_Key(0x2, keyState.IsKeyDown(Key.Number2));
-            //chip8.send_Key(0x3, keyState.IsKeyDown(Key.Number3));
-            //chip8.send_Key(0xC, keyState.IsKeyDown(Key.Number4));
-
-            //chip8.send_Key(0x4, keyState.IsKeyDown(Key.Q));
-            //chip8.send_Key(0x5, keyState.IsKeyDown(Key.W));
-            //chip8.send_Key(0x6, keyState.IsKeyDown(Key.E));
-            //chip8.send_Key(0xD, keyState.IsKeyDown(Key.R));
-
-            //chip8.send_Key(0x7, keyState.IsKeyDown(Key.A));
-            //chip8.send_Key(0x8, keyState.IsKeyDown(Key.S));
-            //chip8.send_Key(0x9, keyState.IsKeyDown(Key.D));
-            //chip8.send_Key(0xE, keyState.IsKeyDown(Key.F));
-
-            //chip8.send_Key(0xA, keyState.IsKeyDown(Key.Z));
-            //chip8.send_Key(0x0, keyState.IsKeyDown(Key.X));
-            //chip8.send_Key(0xB, keyState.IsKeyDown(Key.C));
-            //chip8.send_Key(0xF, keyState.IsKeyDown(Key.V));
+            
 
             chip8.eCycle();
 
@@ -108,6 +100,8 @@ namespace Chip_8
 
         void window_RenderFrame(object sender, FrameEventArgs e)
         {
+            GL.Viewport(0,0,window.Width, window.Height);
+            
             GL.ClearColor(Color4.Blue);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Clear(ClearBufferMask.DepthBufferBit);

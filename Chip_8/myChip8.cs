@@ -471,6 +471,12 @@ namespace Chip_8
 
             //Execute Opcode
 
+           
+
+        }
+
+        public void updateCounters()
+        {
             //Update Timers
             if (delay_timer > 0)
             {
@@ -482,11 +488,10 @@ namespace Chip_8
                 sound_timer--;
                 if (sound_timer == 1)
                 {
-                    //Console.WriteLine("BEEP");
-                    
+                    Console.WriteLine("BEEP");
+
                 }
             }
-
         }
 
         public bool drawFlag = false;
